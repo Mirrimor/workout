@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Din Ukesplan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #DAD4DF;
+    --card: #E9E1F7;
+    --accent: #8E76B2;
+    --accent2: #A98FCC;
+    --accent3: #5C456B;
+    --text: #5C456B;
+    --muted: #B19AC7;
+    --border: #C8B9DD;
+    --rest: #f0ece4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+  }
+
+  header { text-align: center; margin-bottom: 48px; }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--text);
+    line-height: 1.1;
+  }
+  header h1 em { font-style: italic; color: var(--accent); }
+  header p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto 48px;
+  }
+
+  .day-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .day-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+  .day-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .day-card.senter::before { background: var(--accent); }
+  .day-card.dans::before { background: var(--accent2); }
+  .day-card.hvile::before { background: var(--rest); }
+  .day-card.ekstra::before { background: var(--accent3); }
+
+  .day-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+  .senter .day-label { color: var(--accent); }
+  .dans .day-label { color: var(--accent2); }
+  .hvile .day-label { color: var(--muted); }
+  .ekstra .day-label { color: #F2ECFA; }
+
+  .day-name { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 16px; color: var(--text); }
+
+  .section-title { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+
+  .activity-title { font-weight: 500; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .activity-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+  .senter .icon { background: rgba(142,118,178,0.2); }
+  .dans .icon { background: rgba(169,143,204,0.2); }
+  .hvile .icon { background: rgba(214,203,227,0.4); }
+  .ekstra .icon { background: rgba(92,69,107,0.12); }
+
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .item-list li { font-size: 0.875rem; color: #5C456B; padding: 7px 10px; background: var(--bg); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .item-list li span.sets { font-size: 0.75rem; color: var(--muted); white-space: nowrap; margin-left: 8px; }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .tag { display: inline-block; font-size: 0.7rem; font-weight: 500; padding: 3px 8px; border-radius: 20px; margin-bottom: 10px; }
+  .tag.bein { background: rgba(142,118,178,0.15); color: var(--accent); }
+  .tag.overkropp { background: rgba(131,104,113,0.15); color: #F2ECFA; }
+  .tag.cardio { background: rgba(169,143,204,0.15); color: #5C456B; }
+
+  .water-section {
+    max-width: 1100px; margin: 0 auto 32px;
+    background: #E9E1F7; border-radius: 16px; padding: 24px 28px;
+    border: 1px solid #C8B9DD; display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .water-section .wicon { font-size: 2rem; flex-shrink: 0; }
+  .water-section h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 8px; color: #5C456B; }
+  .water-section p, .water-section li { font-size: 0.875rem; color: #5C456B; line-height: 1.6; }
+  .water-section ul { margin-top: 6px; padding-left: 16px; }
+
+  .food-section { max-width: 1100px; margin: 0 auto 32px; background: #E9E1F7; border-radius: 16px; padding: 24px 28px; border: 1px solid #C8B9DD; }
+  .food-section h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 14px; color: #5C456B; }
+  .meal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .meal-item { background: white; border-radius: 10px; padding: 14px; border: 1px solid #f0dccb; }
+  .meal-item .meal-name { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .meal-item p { font-size: 0.85rem; color: #5C456B; line-height: 1.5; }
+
+  .tip-box {
+    max-width: 1100px; margin: 0 auto 48px;
+    background: #5C456B; border-radius: 16px; padding: 22px 28px;
+    border: 1px solid #8E76B2; font-size: 0.875rem; color: #F2ECFA; line-height: 1.7;
+  }
+  .tip-box strong { font-family: 'DM Serif Display', serif; font-size: 1.1rem; display: block; margin-bottom: 6px; color: #F2ECFA; }
+
+  /* ── TRENINGSDAGBOK ── */
+  .tracker-section {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid var(--border);
+  }
+
+  .tracker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .tracker-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+  }
+
+  .tracker-header h2 em { font-style: italic; color: var(--accent2); }
+
+  .progress-bar-wrap {
+    background: var(--bg);
+    border-radius: 20px;
+    height: 10px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 260px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .week-block { margin-bottom: 24px; }
+
+  .week-block-title {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .days-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 500px) {
+    .days-row { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .day-check {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .day-check .dc-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .day-check .dc-type {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .dc-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.18s ease;
+    position: relative;
+  }
+
+  .day-check:active .dc-box { transform: scale(0.92); }
+
+  .dc-box.checked {
+    border-color: transparent;
+    background: #eaf4ef;
+  }
+
+  .dc-box.checked-senter { background: #fdf0e8; border-color: transparent; }
+  .dc-box.checked-dans   { background: #eaf4ef; border-color: transparent; }
+  .dc-box.checked-hvile  { background: #f5f3ef; border-color: transparent; }
+  .dc-box.checked-ekstra { background: #f0eef8; border-color: transparent; }
+  .dc-box.checked-alt { background: #e8f4e8; border-color: transparent; }
+
+  .dc-box .checkmark {
+    display: none;
+    font-size: 1.3rem;
+  }
+
+  .dc-box.checked .checkmark { display: block; }
+  .dc-box .dc-icon { font-size: 1rem; }
+  .dc-box.checked .dc-icon { display: none; }
+
+  .tracker-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 12px 0 4px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .reset-btn {
+    display: block;
+    margin: 16px auto 0;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--bg); color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Miriam</h1>
+
+</header>
+
+<div class="week-grid">
+
+  <!-- MANDAG -->
+  <div class="day-card senter">
+    <div class="day-label">Dag 1</div>
+    <div class="day-name">Mandag</div>
+    <div class="activity-title"><span class="icon">🏋️</span> Treningssenter – 40–45 min</div>
+    <div class="section-title">Bein · lett vekt, høye reps</div>
+    <span class="tag bein">Bein</span>
+    <ul class="item-list">
+      <li>Leg extension <span class="sets">3 × 20</span></li>
+      <li>Leg curl (liggende) <span class="sets">3 × 20</span></li>
+      <li>Hip thrust <span class="sets">4 × 4</span></li>
+      <li>Tåhev <span class="sets">3 × 25</span></li>
+    </ul>
+    <div class="divider"></div>
+    <div class="section-title">Overkropp · 10–15 min</div>
+    <span class="tag overkropp">Overkropp</span>
+    <ul class="item-list">
+      <li>Benkpress <span class="sets">4 × 4</span></li>
+      <li>Sidehev manualer <span class="sets">4 × 4</span></li>
+      <li>Tricepspress kabel <span class="sets">4 × 4</span></li>
+    </ul>
+  </div>
+
+  <!-- TIRSDAG -->
+  <div class="day-card dans">
+    <div class="day-label">Dag 2</div>
+    <div class="day-name">Tirsdag</div>
+    <div class="activity-title"><span class="icon">🕺</span> Just Dance – 30 min+</div>
+    <span class="tag cardio">Cardio</span>
+    <ul class="item-list">
+      <li>Velg sanger du elsker</li>
+      <li>Hold på til du svetter litt</li>
+      <li>Ingen andre regler 🎉</li>
+    </ul>
+  </div>
+
+  <!-- ONSDAG -->
+  <div class="day-card hvile">
+    <div class="day-label">Dag 3</div>
+    <div class="day-name">Onsdag</div>
+    <div class="activity-title"><span class="icon">🌿</span> Hvile</div>
+    <ul class="item-list">
+
+    </ul>
+  </div>
+
+  <!-- TORSDAG -->
+  <div class="day-card senter">
+    <div class="day-label">Dag 4</div>
+    <div class="day-name">Torsdag</div>
+    <div class="activity-title"><span class="icon">🏋️</span> Treningssenter – 40–45 min</div>
+    <div class="section-title">Bein · lett vekt, høye reps</div>
+    <span class="tag bein">Bein</span>
+    <ul class="item-list">
+      <li>Leg extension <span class="sets">3 × 20</span></li>
+      <li>Leg curl (liggende) <span class="sets">3 × 20</span></li>
+      <li>Hip thrust <span class="sets">4 × 4</span></li>
+      <li>Tåhev <span class="sets">3 × 25</span></li>
+    </ul>
+    <div class="divider"></div>
+    <div class="section-title">Overkropp · 10–15 min</div>
+    <span class="tag overkropp">Overkropp</span>
+    <ul class="item-list">
+      <li>Lat pulldown <span class="sets">4 × 4</span></li>
+      <li>Kabelroing <span class="sets">4 × 4</span></li>
+      <li>Bicepscurl <span class="sets">4 × 4</span></li>
+    </ul>
+  </div>
+
+  <!-- FREDAG -->
+  <div class="day-card dans">
+    <div class="day-label">Dag 5</div>
+    <div class="day-name">Fredag</div>
+    <div class="activity-title"><span class="icon">🕺</span> Just Dance – 30 min+</div>
+    <span class="tag cardio">Cardio</span>
+    <ul class="item-list">
+      <li>Perfekt avslutning på uken</li>
+      <li>Gjerne lenger hvis du har lyst</li>
+      <li>Ta med noen hvis mulig!</li>
+    </ul>
+  </div>
+
+  <!-- LØRDAG -->
+  <div class="day-card ekstra">
+    <div class="day-label">Dag 6</div>
+    <div class="day-name">Lørdag</div>
+    <div class="activity-title"><span class="icon">🔥</span> Mage hjemme – 15–20 min</div>
+    <ul class="item-list">
+      <li>Bicycle crunch <span class="sets">3 × 15/side</span></li>
+      <li>Toe touch <span class="sets">3 × 15</span></li>
+      <li>Planke <span class="sets">3 × 30 sek</span></li>
+    </ul>
+  </div>
+
+  <!-- SØNDAG -->
+  <div class="day-card hvile">
+    <div class="day-label">Dag 7</div>
+    <div class="day-name">Søndag</div>
+    <div class="activity-title"><span class="icon">🌿</span> Hvile</div>
+    <ul class="item-list">
+
+    </ul>
+  </div>
+
+</div>
+
+<div class="water-section">
+  <div class="wicon">💧</div>
+  <div>
+    <h3>Drikketips for uken</h3>
+    <p>Mål: jobbe deg gradvis opp til 6–8 glass om dagen. Start her:</p>
+    <ul>
+      <li>Et glass før frokost og ett før middag – to "gratis" glass</li>
+      <li>Ha alltid en flaske synlig på bordet</li>
+      <li>Bytt én kaffe mot en kopp urtete (teller som væske!)</li>
+      <li>Legg sitron eller agurk i vannet om det smaker kjedelig</li>
+    </ul>
+  </div>
+</div>
+
+
+
+<div class="tip-box">
+  <strong>💡 Husk</strong>
+  Tung overkropp og hip thrust gir styrke og form, mens lett vekt på resten av beinøvelsene former uten å bygge volum. Just Dance tar seg av cardioen. Ikke prøv å gjøre alt perfekt fra dag én – to–tre uker og du vil kjenne forskjell!
+</div>
+
+<!-- TRENINGSDAGBOK -->
+<div class="tracker-section">
+  <div class="tracker-header">
+    <h2>Trenings<em>dagbok</em></h2>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 7 dager</span>
+  </div>
+  <div id="trackerBody"></div>
+  <div class="tracker-legend">
+    <span>✅ Fullført som planlagt</span>
+    <span>💪 Trent, men annerledes</span>
+    <span>⬜ Ikke gjort ennå</span>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">Nullstill uken</button>
+</div>
+
+<script>
+  const DAYS = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
+  const TYPES = ['senter','dans','hvile','senter','dans','ekstra','hvile'];
+  const ICONS = ['🏋️','🕺','🌿','🏋️','🕺','🔥','🌿'];
+  const TOTAL = 7;
+  const STORAGE_KEY = 'treningsdagbok_v2';
+
+  function loadChecked() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  }
+
+  function saveChecked(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  }
+
+  function updateProgress(checked) {
+    const count = Object.values(checked).filter(v => v > 0).length;
+    const pct = Math.round((count / TOTAL) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + TOTAL + ' dager';
+  }
+
+  function toggle(id) {
+    const checked = loadChecked();
+    const current = checked[id] || 0;
+    checked[id] = (current + 1) % 3;
+    saveChecked(checked);
+    renderBox(id, checked[id]);
+    updateProgress(checked);
+  }
+
+  function renderBox(id, state) {
+    const box = document.getElementById('box-' + id);
+    const type = box.dataset.type;
+    box.classList.remove('checked','checked-senter','checked-dans','checked-hvile','checked-ekstra','checked-alt');
+    const icon = box.querySelector('.dc-icon');
+    const checkmark = box.querySelector('.checkmark');
+    if (state === 1) {
+      box.classList.add('checked', 'checked-' + type);
+      checkmark.textContent = '✅';
+      checkmark.style.display = 'block';
+      icon.style.display = 'none';
+    } else if (state === 2) {
+      box.classList.add('checked', 'checked-alt');
+      checkmark.textContent = '💪';
+      checkmark.style.display = 'block';
+      icon.style.display = 'none';
+    } else {
+      checkmark.style.display = 'none';
+      icon.style.display = 'block';
+    }
+  }
+
+  function resetAll() {
+    if (!confirm('Nullstille uken?')) return;
+    saveChecked({});
+    document.querySelectorAll('.dc-box').forEach(b => {
+      b.classList.remove('checked','checked-senter','checked-dans','checked-hvile','checked-ekstra','checked-alt');
+      b.querySelector('.checkmark').style.display = 'none';
+      b.querySelector('.dc-icon').style.display = 'block';
+    });
+    updateProgress({});
+  }
+
+  function build() {
+    const checked = loadChecked();
+    const body = document.getElementById('trackerBody');
+    body.innerHTML = '';
+
+    const row = document.createElement('div');
+    row.className = 'days-row';
+
+    for (let d = 0; d < 7; d++) {
+      const id = 'day-' + d;
+      const type = TYPES[d];
+      const state = checked[id] || 0;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'day-check';
+      wrap.onclick = () => toggle(id);
+
+      const box = document.createElement('div');
+      box.className = 'dc-box';
+      box.id = 'box-' + id;
+      box.dataset.type = type;
+
+      const icon = document.createElement('span');
+      icon.className = 'dc-icon';
+      icon.textContent = ICONS[d];
+      icon.style.display = state === 0 ? 'block' : 'none';
+
+      const checkmark = document.createElement('span');
+      checkmark.className = 'checkmark';
+      checkmark.style.display = state > 0 ? 'block' : 'none';
+      if (state === 1) {
+        box.classList.add('checked', 'checked-' + type);
+        checkmark.textContent = '✅';
+      } else if (state === 2) {
+        box.classList.add('checked', 'checked-alt');
+        checkmark.textContent = '💪';
+      }
+
+      box.appendChild(icon);
+      box.appendChild(checkmark);
+
+      const label = document.createElement('div');
+      label.className = 'dc-label';
+      label.textContent = DAYS[d];
+
+      wrap.appendChild(box);
+      wrap.appendChild(label);
+      row.appendChild(wrap);
+    }
+
+    body.appendChild(row);
+    updateProgress(checked);
+  }
+
+  build();
+</script>
+
+</body>
+</html>
