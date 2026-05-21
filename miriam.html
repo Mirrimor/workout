@@ -278,6 +278,28 @@
     transition: all 0.15s;
   }
   .reset-btn:hover { background: var(--bg); color: var(--text); }
+
+  input[type=number].pb-input::-webkit-inner-spin-button,
+  input[type=number].pb-input::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+  }
+
+  input[type=number].pb-input {
+    width: 48px !important;
+    border: none !important;
+    border-radius: 999px !important;
+    background: rgba(201,189,224,0.35) !important;
+    box-shadow: inset 2px 2px 5px rgba(150,130,180,0.2) !important;
+    font-size: 0.8rem !important;
+    color: #5C456B !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    outline: none !important;
+    padding: 3px 8px !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
 </style>
 </head>
 <body>
@@ -307,6 +329,8 @@
     <span class="tag overkropp">Overkropp</span>
     <ul class="item-list">
       <li>Benkpress <span class="sets">4 × 4</span></li>
+    </ul>
+    <ul class="item-list">
       <li>Sidehev manualer <span class="sets">4 × 4</span></li>
       <li>Tricepspress kabel <span class="sets">4 × 4</span></li>
     </ul>
@@ -393,6 +417,17 @@
     </ul>
   </div>
 
+  <!-- PERSONLIG BESTE -->
+  <div class="day-card ekstra">
+    <div class="day-label">PB</div>
+    <div class="day-name">Personlig beste</div>
+    <div class="activity-title"><span class="icon">🏆</span> Tyngste løft</div>
+    <ul class="item-list">
+      <li>Hip thrust <span class="sets"><input class="pb-input" type="number" id="pb-hip" placeholder="" oninput="savePBVal('pb-hip',this.value)"> kg</span></li>
+      <li>Benkpress <span class="sets"><input class="pb-input" type="number" id="pb-benk" placeholder="" oninput="savePBVal('pb-benk',this.value)"> kg</span></li>
+    </ul>
+  </div>
+
 </div>
 
 <div class="water-section">
@@ -417,6 +452,8 @@
 </div>
 
 <!-- TRENINGSDAGBOK -->
+
+
 <div class="tracker-section">
   <div class="tracker-header">
     <h2>Trenings<em>dagbok</em></h2>
@@ -433,6 +470,8 @@
 </div>
 
 <script>
+
+
   const DAYS = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
   const TYPES = ['senter','dans','hvile','senter','dans','ekstra','hvile'];
   const ICONS = ['🏋️','🕺','🌿','🏋️','🕺','🔥','🌿'];
@@ -496,6 +535,20 @@
     updateProgress({});
   }
 
+  // PB storage
+  const PB_KEY = 'trenings_pb_v1';
+  function loadPBs() { try { return JSON.parse(localStorage.getItem(PB_KEY)) || {}; } catch { return {}; } }
+  function savePBVal(key, value) {
+    const pbs = loadPBs();
+    pbs[key] = value;
+    try { localStorage.setItem(PB_KEY, JSON.stringify(pbs)); } catch {}
+  }
+  function loadPBInputs() {
+    const pbs = loadPBs();
+    if (pbs['pb-hip']) document.getElementById('pb-hip').value = pbs['pb-hip'];
+    if (pbs['pb-benk']) document.getElementById('pb-benk').value = pbs['pb-benk'];
+  }
+
   function build() {
     const checked = loadChecked();
     const body = document.getElementById('trackerBody');
@@ -551,6 +604,7 @@
   }
 
   build();
+  loadPBInputs();
 </script>
 
 </body>
