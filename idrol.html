@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idrol – Training Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    /* Palette fra bildet */
+    --brown-hen:    #59452F;
+    --brown-teepee: #BDA690;
+    --mecca-orange: #BE5845;
+    --pastel-peach: #F4CCAE;
+    --dark-sienna:  #3D140E;
+
+    /* Ekstra utvidede farger som passer */
+    --rust:         #A03D2A;   /* mørkere rust - sterk aksent */
+    --ember:        #D4603A;   /* varm oransjerød */
+    --stone:        #7A6250;   /* mellomton brun */
+    --cream:        #F5E8DA;   /* lys bakgrunn */
+    --charcoal:     #2A1A12;   /* nesten svart brun */
+
+    /* Semantiske variabler */
+    --bg:     #F0E0CC;
+    --card:   #FAF0E6;
+    --text:   var(--dark-sienna);
+    --muted:  var(--stone);
+    --border: #D4B89A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 60px;
+  }
+
+  /* ── HEADER ── */
+  header { text-align: center; margin-bottom: 52px; }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    color: var(--dark-sienna);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  header h1 em { font-style: italic; color: var(--mecca-orange); }
+  header p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── WEEK GRID ── */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 1100px;
+    margin: 0 auto 48px;
+  }
+
+  /* ── DAY CARD ── */
+  .day-card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .day-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(61,20,14,0.12); }
+  .day-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+  .day-card.senter::before { background: var(--rust); }
+  .day-card.cardio::before { background: var(--mecca-orange); }
+  .day-card.hvile::before  { background: var(--brown-teepee); }
+  .day-card.ekstra::before { background: var(--ember); }
+
+  .day-label {
+    font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .senter .day-label { color: var(--rust); }
+  .cardio .day-label { color: var(--mecca-orange); }
+  .hvile  .day-label { color: var(--stone); }
+  .ekstra .day-label { color: var(--ember); }
+
+  .day-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: var(--dark-sienna);
+  }
+
+  .section-title {
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin: 14px 0 6px;
+  }
+
+  .activity-title {
+    font-weight: 500; font-size: 0.95rem;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .activity-title .icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .senter .icon { background: rgba(160,61,42,0.12); }
+  .cardio .icon { background: rgba(190,88,69,0.15); }
+  .hvile  .icon { background: rgba(189,166,144,0.3); }
+  .ekstra .icon { background: rgba(212,96,58,0.15); }
+
+  .item-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .item-list li {
+    font-size: 0.875rem; color: var(--dark-sienna);
+    padding: 7px 10px; background: var(--bg);
+    border-radius: 8px; display: flex;
+    justify-content: space-between; align-items: center;
+  }
+  .item-list li span.sets {
+    font-size: 0.75rem; color: var(--muted);
+    white-space: nowrap; margin-left: 8px;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .tag {
+    display: inline-block; font-size: 0.7rem; font-weight: 500;
+    padding: 3px 8px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .tag.bein      { background: rgba(160,61,42,0.12); color: var(--rust); }
+  .tag.overkropp { background: rgba(89,69,47,0.12);  color: var(--brown-hen); }
+  .tag.cardio    { background: rgba(190,88,69,0.15);  color: var(--mecca-orange); }
+  .tag.mage      { background: rgba(212,96,58,0.15);  color: var(--ember); }
+
+  /* ── WATER SECTION ── */
+  .water-section {
+    max-width: 1100px; margin: 0 auto 32px;
+    background: var(--card); border-radius: 16px; padding: 24px 28px;
+    border: 1px solid var(--border); display: flex; gap: 20px;
+    align-items: flex-start; flex-wrap: wrap;
+  }
+  .water-section .wicon { font-size: 2rem; flex-shrink: 0; }
+  .water-section h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 8px; color: var(--dark-sienna); }
+  .water-section p, .water-section li { font-size: 0.875rem; color: var(--dark-sienna); line-height: 1.6; }
+  .water-section ul { margin-top: 6px; padding-left: 16px; }
+
+  /* ── TIP BOX ── */
+  .tip-box {
+    max-width: 1100px; margin: 0 auto 48px;
+    background: var(--dark-sienna); border-radius: 16px; padding: 22px 28px;
+    border: 1px solid var(--rust); font-size: 0.875rem;
+    color: var(--pastel-peach); line-height: 1.7;
+  }
+  .tip-box strong {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; display: block; margin-bottom: 6px; color: var(--mecca-orange);
+  }
+
+  /* ── TRACKER ── */
+  .tracker-section {
+    max-width: 1100px; margin: 0 auto 40px;
+    background: var(--card); border-radius: 20px;
+    padding: 28px; border: 1px solid var(--border);
+  }
+  .tracker-header {
+    display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap;
+    gap: 12px; margin-bottom: 24px;
+  }
+  .tracker-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; color: var(--dark-sienna);
+  }
+  .tracker-header h2 em { font-style: italic; color: var(--mecca-orange); }
+
+  .progress-bar-wrap {
+    background: var(--bg); border-radius: 20px;
+    height: 10px; flex: 1; min-width: 120px;
+    max-width: 260px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 20px;
+    background: linear-gradient(90deg, var(--mecca-orange), var(--rust));
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+
+  .days-row {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+  }
+  @media (max-width: 500px) { .days-row { grid-template-columns: repeat(4, 1fr); } }
+
+  .day-check {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .day-check .dc-label { font-size: 0.65rem; color: var(--muted); text-align: center; line-height: 1.2; }
+
+  .dc-box {
+    width: 44px; height: 44px; border-radius: 12px;
+    border: 2px solid var(--border); background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; transition: all 0.18s ease; position: relative;
+  }
+  .day-check:active .dc-box { transform: scale(0.92); }
+  .dc-box.checked { border-color: transparent; }
+  .dc-box.checked-senter { background: #f2ddd7; }
+  .dc-box.checked-cardio { background: #f5e0d8; }
+  .dc-box.checked-hvile  { background: #ede5db; }
+  .dc-box.checked-ekstra { background: #f5dfd2; }
+  .dc-box.checked-alt    { background: #f0e4dc; }
+
+  .dc-box .checkmark { display: none; font-size: 1.3rem; }
+  .dc-box.checked .checkmark { display: block; }
+  .dc-box .dc-icon { font-size: 1rem; }
+  .dc-box.checked .dc-icon { display: none; }
+
+  .tracker-legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    justify-content: center; margin: 12px 0 4px;
+    font-size: 0.75rem; color: var(--muted);
+  }
+
+  .reset-btn {
+    display: block; margin: 16px auto 0;
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; padding: 8px 20px; border-radius: 20px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--bg); color: var(--text); }
+
+  /* ── ERNÆRING ── */
+  .nutrition-section {
+    max-width: 1100px; margin: 0 auto 32px;
+  }
+
+  .nutrition-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; color: var(--dark-sienna);
+    margin-bottom: 6px;
+  }
+  .nutrition-section h2 em { font-style: italic; color: var(--mecca-orange); }
+  .nutrition-section .section-intro {
+    font-size: 0.875rem; color: var(--muted); margin-bottom: 24px; font-weight: 300;
+  }
+
+  .macro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+
+  .macro-card {
+    background: var(--card); border-radius: 14px;
+    padding: 18px 20px; border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .macro-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .macro-card.kcal::before  { background: var(--rust); }
+  .macro-card.prot::before  { background: var(--mecca-orange); }
+  .macro-card.karb::before  { background: var(--ember); }
+  .macro-card.fett::before  { background: var(--brown-teepee); }
+
+  .macro-label {
+    font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .macro-card.kcal .macro-label { color: var(--rust); }
+  .macro-card.prot .macro-label { color: var(--mecca-orange); }
+  .macro-card.karb .macro-label { color: var(--ember); }
+  .macro-card.fett .macro-label { color: var(--stone); }
+
+  .macro-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; color: var(--dark-sienna); line-height: 1;
+  }
+  .macro-unit { font-size: 0.8rem; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+  .day-type-tabs {
+    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .day-type-tab {
+    padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+    font-weight: 500; cursor: pointer; border: 1px solid var(--border);
+    background: var(--card); color: var(--muted); transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .day-type-tab.active-trening {
+    background: var(--rust); color: #FAF0E6; border-color: var(--rust);
+  }
+  .day-type-tab.active-hvile {
+    background: var(--brown-hen); color: var(--pastel-peach); border-color: var(--brown-hen);
+  }
+
+  .meal-plan { display: none; }
+  .meal-plan.active { display: block; }
+
+  .meal-row {
+    background: var(--card); border-radius: 14px; padding: 18px 20px;
+    border: 1px solid var(--border); margin-bottom: 10px;
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 16px; align-items: start;
+  }
+
+  .meal-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--rust); color: #FAF0E6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 500; flex-shrink: 0; margin-top: 2px;
+  }
+  .meal-plan.hvile .meal-num { background: var(--brown-hen); }
+
+  .meal-name {
+    font-weight: 500; font-size: 0.95rem; color: var(--dark-sienna); margin-bottom: 4px;
+  }
+  .meal-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+  .meal-kcal {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; color: var(--rust); white-space: nowrap; text-align: right;
+  }
+  .meal-plan.hvile .meal-kcal { color: var(--brown-hen); }
+  .meal-kcal span { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: var(--muted); font-weight: 300; }
+
+  .nutrition-rules {
+    background: var(--card); border-radius: 14px;
+    padding: 20px 24px; border: 1px solid var(--border); margin-top: 16px;
+  }
+  .nutrition-rules h4 {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    color: var(--dark-sienna); margin-bottom: 12px;
+  }
+  .rule-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .rule-list li {
+    font-size: 0.855rem; color: var(--dark-sienna); line-height: 1.5;
+    padding: 8px 12px; background: var(--bg); border-radius: 8px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .rule-list li .rule-icon { flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><em>Idrol</em></h1>
+  <p>Your weekly training plan</p>
+</header>
+
+
+
+<!-- ERNÆRING -->
+<div class="nutrition-section">
+  <h2>Nutrition<em> plan</em></h2>
+  <p class="section-intro">70 kg · 179 cm · 18–25 yrs · Bulk · Gym 2×/week + Climbing 2–3×/week</p>
+
+  <!-- DAGSMÅL: TRENINGSDAG -->
+  <div class="macro-grid" id="macroGrid">
+    <div class="macro-card kcal">
+      <div class="macro-label">Calories</div>
+      <div class="macro-value" id="mKcal">3 200–3 300</div>
+      <div class="macro-unit">kcal / day</div>
+    </div>
+    <div class="macro-card prot">
+      <div class="macro-label">Protein</div>
+      <div class="macro-value" id="mProt">145–155</div>
+      <div class="macro-unit">g / day</div>
+    </div>
+    <div class="macro-card karb">
+      <div class="macro-label">Carbohydrates</div>
+      <div class="macro-value" id="mKarb">380–420</div>
+      <div class="macro-unit">g / day</div>
+    </div>
+    <div class="macro-card fett">
+      <div class="macro-label">Fat</div>
+      <div class="macro-value" id="mFett">80–95</div>
+      <div class="macro-unit">g / day</div>
+    </div>
+  </div>
+
+  <div class="day-type-tabs">
+    <button class="day-type-tab active-trening" onclick="showPlan('trening', this)">🏋️ Training day / climbing day</button>
+    <button class="day-type-tab" onclick="showPlan('hvile', this)">🌿 Rest day</button>
+  </div>
+
+  <!-- TRAINING DAY MEALS -->
+  <div class="meal-plan trening active" id="plan-trening">
+    <div class="meal-row">
+      <div class="meal-num">1</div>
+      <div>
+        <div class="meal-name">Breakfast</div>
+        <div class="meal-desc">4 eggs + 70 g oats + banana + semi-skimmed milk. Solid carb and protein start to the day.</div>
+      </div>
+      <div class="meal-kcal">~650 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">2</div>
+      <div>
+        <div class="meal-name">Lunch</div>
+        <div class="meal-desc">250 g chicken, meat, or salmon + 140 g rice + vegetables + olive oil. Biggest meal of the day.</div>
+      </div>
+      <div class="meal-kcal">~800 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">3</div>
+      <div>
+        <div class="meal-name">Pre-workout</div>
+        <div class="meal-desc">Protein shake + 2 rice cakes with peanut butter. Eat 60–90 min before training / climbing.</div>
+      </div>
+      <div class="meal-kcal">~400 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">4</div>
+      <div>
+        <div class="meal-name">Post-workout</div>
+        <div class="meal-desc">Lean meat or fish + white rice or pasta. Within 1 hour of finishing – critical for recovery.</div>
+      </div>
+      <div class="meal-kcal">~700 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">5</div>
+      <div>
+        <div class="meal-name">Evening</div>
+        <div class="meal-desc">Cottage cheese or casein shake + almonds. Slow-release protein overnight, low carbs this late.</div>
+      </div>
+      <div class="meal-kcal">~450 kcal<span>kcal</span></div>
+    </div>
+  </div>
+
+  <!-- REST DAY MEALS -->
+  <div class="meal-plan hvile" id="plan-hvile">
+    <div class="meal-row">
+      <div class="meal-num">1</div>
+      <div>
+        <div class="meal-name">Breakfast</div>
+        <div class="meal-desc">3 eggs + vegetables + avocado + wholegrain bread. Lower carbs, more fat and protein.</div>
+      </div>
+      <div class="meal-kcal">~550 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">2</div>
+      <div>
+        <div class="meal-name">Lunch</div>
+        <div class="meal-desc">250 g chicken or salmon + salad + olive oil + small portion of sweet potato.</div>
+      </div>
+      <div class="meal-kcal">~700 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">3</div>
+      <div>
+        <div class="meal-name">Afternoon snack</div>
+        <div class="meal-desc">Full-fat Greek yogurt + mixed nuts. No need for fast carbs today.</div>
+      </div>
+      <div class="meal-kcal">~380 kcal<span>kcal</span></div>
+    </div>
+    <div class="meal-row">
+      <div class="meal-num">4</div>
+      <div>
+        <div class="meal-name">Dinner / evening</div>
+        <div class="meal-desc">Lean meat + roasted vegetables + cottage cheese. Keep carbs minimal in the evening.</div>
+      </div>
+      <div class="meal-kcal">~600 kcal<span>kcal</span></div>
+    </div>
+  </div>
+
+  <div class="nutrition-rules">
+    <h4>Key rules</h4>
+    <ul class="rule-list">
+      <li><span class="rule-icon">🥩</span> <span><strong>Protein:</strong> Hit 145–155 g every single day regardless of activity. Spread across all meals (~35–40 g per sitting).</span></li>
+      <li><span class="rule-icon">🧗</span> <span><strong>Climbing days = training days:</strong> Climbing is extremely demanding on arms, back, and grip – eat like a training day, including pre- and post-session meals.</span></li>
+      <li><span class="rule-icon">🍚</span> <span><strong>Carb timing:</strong> Load carbs around training and climbing. Avoid large carb meals late at night.</span></li>
+      <li><span class="rule-icon">📈</span> <span><strong>Bulk target:</strong> Aim for 0.2–0.35 kg per week. Growing too slowly – add 150 kcal on training days. Gaining fat too fast – cut 30 g of carbs first.</span></li>
+      <li><span class="rule-icon">💊</span> <span><strong>Creatine:</strong> 5 g daily. The most evidence-backed supplement for strength and muscle growth.</span></li>
+      <li><span class="rule-icon">💧</span> <span><strong>Hydration:</strong> 2.5–3.5 litres of water per day. Especially important on climbing days – your fingers and tendons need it.</span></li>
+      <li><span class="rule-icon">😴</span> <span><strong>Sleep:</strong> 8–9 hours. Growth hormone peaks during deep sleep – that is when the muscle is actually built.</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- WEEK SCHEDULE -->
+<div class="week-grid">
+
+  <!-- MONDAY -->
+  <div class="day-card senter">
+    <div class="day-label">Day 1</div>
+    <div class="day-name">Monday</div>
+    <div class="activity-title"><span class="icon">🏋️</span> Gym</div>
+  </div>
+
+  <!-- TUESDAY -->
+  <div class="day-card cardio">
+    <div class="day-label">Day 2</div>
+    <div class="day-name">Tuesday</div>
+    <div class="activity-title"><span class="icon">🧗</span> Climbing</div>
+  </div>
+
+  <!-- WEDNESDAY -->
+  <div class="day-card hvile">
+    <div class="day-label">Day 3</div>
+    <div class="day-name">Wednesday</div>
+    <div class="activity-title"><span class="icon">🌿</span> Rest</div>
+  </div>
+
+  <!-- THURSDAY -->
+  <div class="day-card cardio">
+    <div class="day-label">Day 4</div>
+    <div class="day-name">Thursday</div>
+    <div class="activity-title"><span class="icon">🧗</span> Climbing</div>
+  </div>
+
+  <!-- FRIDAY -->
+  <div class="day-card senter">
+    <div class="day-label">Day 5</div>
+    <div class="day-name">Friday</div>
+    <div class="activity-title"><span class="icon">🏋️</span> Gym</div>
+  </div>
+
+  <!-- SATURDAY -->
+  <div class="day-card cardio">
+    <div class="day-label">Day 6</div>
+    <div class="day-name">Saturday</div>
+    <div class="activity-title"><span class="icon">🧗</span> Climbing</div>
+  </div>
+
+  <!-- SUNDAY -->
+  <div class="day-card hvile">
+    <div class="day-label">Day 7</div>
+    <div class="day-name">Sunday</div>
+    <div class="activity-title"><span class="icon">🌿</span> Rest</div>
+  </div>
+
+</div>
+
+<!-- TRAINING LOG -->
+<div class="tracker-section">
+  <div class="tracker-header">
+    <h2>Training<em> log</em></h2>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+    <span class="progress-label" id="progressLabel">0 / 7 days</span>
+  </div>
+  <div id="trackerBody"></div>
+  <div class="tracker-legend">
+    <span>✅ Completed as planned</span>
+    <span>💪 Trained, but differently</span>
+    <span>⬜ Not done yet</span>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">Reset week</button>
+</div>
+
+<script>
+  const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const TYPES = ['senter','cardio','hvile','cardio','senter','cardio','hvile'];
+  const ICONS = ['🏋️','🧗','🌿','🧗','🏋️','🧗','🌿'];
+  const TOTAL = 7;
+  const STORAGE_KEY = 'idrol_treningsdagbok_v2';
+
+  function loadChecked() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  }
+  function saveChecked(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  }
+  function updateProgress(checked) {
+    const count = Object.values(checked).filter(v => v > 0).length;
+    const pct = Math.round((count / TOTAL) * 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + TOTAL + ' days';
+  }
+  function toggle(id) {
+    const checked = loadChecked();
+    checked[id] = ((checked[id] || 0) + 1) % 3;
+    saveChecked(checked);
+    renderBox(id, checked[id]);
+    updateProgress(checked);
+  }
+  function renderBox(id, state) {
+    const box = document.getElementById('box-' + id);
+    const type = box.dataset.type;
+    box.classList.remove('checked','checked-senter','checked-cardio','checked-hvile','checked-ekstra','checked-alt');
+    const icon = box.querySelector('.dc-icon');
+    const checkmark = box.querySelector('.checkmark');
+    if (state === 1) {
+      box.classList.add('checked', 'checked-' + type);
+      checkmark.textContent = '✅'; checkmark.style.display = 'block'; icon.style.display = 'none';
+    } else if (state === 2) {
+      box.classList.add('checked', 'checked-alt');
+      checkmark.textContent = '💪'; checkmark.style.display = 'block'; icon.style.display = 'none';
+    } else {
+      checkmark.style.display = 'none'; icon.style.display = 'block';
+    }
+  }
+  function resetAll() {
+    if (!confirm('Reset the week?')) return;
+    saveChecked({});
+    document.querySelectorAll('.dc-box').forEach(b => {
+      b.classList.remove('checked','checked-senter','checked-cardio','checked-hvile','checked-ekstra','checked-alt');
+      b.querySelector('.checkmark').style.display = 'none';
+      b.querySelector('.dc-icon').style.display = 'block';
+    });
+    updateProgress({});
+  }
+  function build() {
+    const checked = loadChecked();
+    const body = document.getElementById('trackerBody');
+    body.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'days-row';
+    for (let d = 0; d < 7; d++) {
+      const id = 'day-' + d;
+      const type = TYPES[d];
+      const state = checked[id] || 0;
+      const wrap = document.createElement('div');
+      wrap.className = 'day-check';
+      wrap.onclick = () => toggle(id);
+      const box = document.createElement('div');
+      box.className = 'dc-box';
+      box.id = 'box-' + id;
+      box.dataset.type = type;
+      const icon = document.createElement('span');
+      icon.className = 'dc-icon';
+      icon.textContent = ICONS[d];
+      icon.style.display = state === 0 ? 'block' : 'none';
+      const checkmark = document.createElement('span');
+      checkmark.className = 'checkmark';
+      checkmark.style.display = state > 0 ? 'block' : 'none';
+      if (state === 1) { box.classList.add('checked','checked-'+type); checkmark.textContent = '✅'; }
+      else if (state === 2) { box.classList.add('checked','checked-alt'); checkmark.textContent = '💪'; }
+      box.appendChild(icon);
+      box.appendChild(checkmark);
+      const label = document.createElement('div');
+      label.className = 'dc-label';
+      label.textContent = DAYS[d];
+      wrap.appendChild(box);
+      wrap.appendChild(label);
+      row.appendChild(wrap);
+    }
+    body.appendChild(row);
+    updateProgress(checked);
+  }
+  // ── ERNÆRING TABS ──
+  const macros = {
+    trening: { kcal: '3 200–3 300', prot: '145–155', karb: '380–420', fett: '80–95' },
+    hvile:   { kcal: '2 700–2 800', prot: '145–155', karb: '240–280', fett: '80–95' }
+  };
+  function showPlan(type, btn) {
+    document.querySelectorAll('.meal-plan').forEach(p => p.classList.remove('active'));
+    document.getElementById('plan-' + type).classList.add('active');
+    document.querySelectorAll('.day-type-tab').forEach(t => {
+      t.classList.remove('active-trening','active-hvile');
+    });
+    btn.classList.add('active-' + type);
+    const m = macros[type];
+    document.getElementById('mKcal').textContent = m.kcal;
+    document.getElementById('mProt').textContent = m.prot;
+    document.getElementById('mKarb').textContent = m.karb;
+    document.getElementById('mFett').textContent = m.fett;
+  }
+
+  build();
+</script>
+
+</body>
+</html>
