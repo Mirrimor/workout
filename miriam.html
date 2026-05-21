@@ -99,8 +99,8 @@
 
   .water-section {
     max-width: 1100px; margin: 0 auto 32px;
-    background: #E9E1F7; border-radius: 16px; padding: 24px 28px;
-    border: 1px solid #C8B9DD; display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;
+    background: #C8B9DD; border-radius: 16px; padding: 24px 28px;
+    border: 1px solid #8E76B2; display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;
   }
   .water-section .wicon { font-size: 2rem; flex-shrink: 0; }
   .water-section h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 8px; color: #5C456B; }
@@ -417,16 +417,6 @@
     </ul>
   </div>
 
-  <!-- PERSONLIG BESTE -->
-  <div class="day-card ekstra">
-    <div class="day-label">PB</div>
-    <div class="day-name">Personlig beste</div>
-    <div class="activity-title"><span class="icon">🏆</span> Tyngste løft</div>
-    <ul class="item-list">
-      <li>Hip thrust <span class="sets"><input class="pb-input" type="number" id="pb-hip" placeholder="" oninput="savePBVal('pb-hip',this.value)"> kg</span></li>
-      <li>Benkpress <span class="sets"><input class="pb-input" type="number" id="pb-benk" placeholder="" oninput="savePBVal('pb-benk',this.value)"> kg</span></li>
-    </ul>
-  </div>
 
 </div>
 
@@ -451,9 +441,18 @@
   Tung overkropp og hip thrust gir styrke og form, mens lett vekt på resten av beinøvelsene former uten å bygge volum. Just Dance tar seg av cardioen. Ikke prøv å gjøre alt perfekt fra dag én – to–tre uker og du vil kjenne forskjell!
 </div>
 
+<!-- PERSONLIG BESTE -->
+<div class="tracker-section">
+  <div class="tracker-header">
+    <h2>Personlig <em>beste</em> 🏆</h2>
+  </div>
+  <ul class="item-list" style="max-width:400px;">
+    <li>🍑 Hip thrust <span class="sets"><input class="pb-input" type="number" id="pb-hip" placeholder="" oninput="savePBVal('pb-hip',this.value)"> kg</span></li>
+    <li>💪 Benkpress <span class="sets"><input class="pb-input" type="number" id="pb-benk" placeholder="" oninput="savePBVal('pb-benk',this.value)"> kg</span></li>
+  </ul>
+</div>
+
 <!-- TRENINGSDAGBOK -->
-
-
 <div class="tracker-section">
   <div class="tracker-header">
     <h2>Trenings<em>dagbok</em></h2>
