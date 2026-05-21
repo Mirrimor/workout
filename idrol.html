@@ -352,6 +352,25 @@
     display: flex; gap: 10px; align-items: flex-start;
   }
   .rule-list li .rule-icon { flex-shrink: 0; }
+
+  /* ── PERSONAL BEST ── */
+  .pb-input {
+    width: 52px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    color: var(--dark-sienna);
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .pb-input:focus { border-color: var(--rust); }
+  .pb-input::-webkit-outer-spin-button,
+  .pb-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .pb-input[type=number] { -moz-appearance: textfield; }
 </style>
 </head>
 <body>
@@ -543,6 +562,19 @@
     <div class="activity-title"><span class="icon">🌿</span> Rest</div>
   </div>
 
+  <!-- PERSONAL BEST -->
+  <div class="day-card ekstra">
+    <div class="day-label">PB</div>
+    <h2 style="font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--dark-sienna); margin-bottom:16px;">Personal <em style="font-style:italic; color:var(--mecca-orange);">best</em></h2>
+    <div class="activity-title"><span class="icon">🏆</span> Heaviest lift</div>
+    <ul class="item-list">
+      <li>Bench press <span class="sets"><input class="pb-input" type="number" id="pb-bench" placeholder="–" oninput="savePBVal('pb-bench',this.value)"> kg</span></li>
+      <li>Squat <span class="sets"><input class="pb-input" type="number" id="pb-squat" placeholder="–" oninput="savePBVal('pb-squat',this.value)"> kg</span></li>
+      <li>Deadlift <span class="sets"><input class="pb-input" type="number" id="pb-deadlift" placeholder="–" oninput="savePBVal('pb-deadlift',this.value)"> kg</span></li>
+      <li>Lat pulldown <span class="sets"><input class="pb-input" type="number" id="pb-lat" placeholder="–" oninput="savePBVal('pb-lat',this.value)"> kg</span></li>
+    </ul>
+  </div>
+
 </div>
 
 <!-- TRAINING LOG -->
@@ -670,7 +702,24 @@
     document.getElementById('mFett').textContent = m.fett;
   }
 
+  // ── PERSONAL BEST ──
+  const PB_KEY = 'idrol_pb_v1';
+  function loadPBs() { try { return JSON.parse(localStorage.getItem(PB_KEY)) || {}; } catch { return {}; } }
+  function savePBVal(key, value) {
+    const pbs = loadPBs();
+    pbs[key] = value;
+    try { localStorage.setItem(PB_KEY, JSON.stringify(pbs)); } catch {}
+  }
+  function loadPBInputs() {
+    const pbs = loadPBs();
+    ['pb-bench','pb-squat','pb-deadlift','pb-lat'].forEach(k => {
+      const el = document.getElementById(k);
+      if (el && pbs[k]) el.value = pbs[k];
+    });
+  }
+
   build();
+  loadPBInputs();
 </script>
 
 </body>
